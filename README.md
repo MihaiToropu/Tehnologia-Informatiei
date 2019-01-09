@@ -1,0 +1,2 @@
+# Tehnologia-Informatiei
+fara
