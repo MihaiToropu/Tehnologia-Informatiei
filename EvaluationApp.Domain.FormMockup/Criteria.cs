@@ -10,8 +10,5 @@ namespace EvaluationApp.Domain.FormMockup
         public string Name { get; set; }
 
         public DateTime ModifiedDate { get; set; }
-
-        public int CreatedBy { get; set; }
-        public int ModifiedBy { get; set; }
     }
 }
