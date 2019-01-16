@@ -1,5 +1,10 @@
-﻿@using EvaluationApp.Core.Shared
-@inject IEvaluationFormService formService
+﻿@using AppServices.EmployeeAuthentication
+@using AppServices.EvaluationsForms
+@using AppServices.Evaluations
+
+@inject IEvaluationFormsService evaluationFormService
+@inject IEvaluationsService evaluationsService
+@inject IEmployeesService employeesService
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,6 +15,13 @@
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/css/site.css" />
+        <link rel="stylesheet" href="~/lib/dist/chartist.min.css" />
+        <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.3/css/bootstrap-select.css" />
+        <link href="~/lib/chosen_v1.8.5/chosen.css" rel="stylesheet" />
+        <link rel="stylesheet" href="~/lib/DataTables/datatables.css" />
+        <link href="~/lib/DataTables/Responsive-2.2.1/css/responsive.bootstrap4.css" rel="stylesheet" />
+        @*<link rel="stylesheet" href="~/lib/DataTables/DataTables-1.10.16/css/dataTables.bootstrap4.css" />*@
+        <link rel="stylesheet" href="~/lib/Notification-Plugin-Bootstrap-4-Hullabaloo/css/alert.css" />
     </environment>
     <environment exclude="Development">
         <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
@@ -19,39 +31,68 @@
     </environment>
 </head>
 <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">EvaluationApp</a>
+    @*<nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">EvaluationApp</a>
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a asp-area="" asp-controller="EvaluationForms" asp-action="Index">Evaluation Forms (@evaluationFormService.GetAllSharedFormsForEmployee(1).Count)</a></li>
+                        <li><a asp-area="" asp-controller="Employees" asp-action="Index">Employees (@employeesService.GetEmployeesToEvaluate(1).Count) </a></li>
+                        <li><a asp-area="" asp-controller="Evaluations" asp-action="InProgress">In progress evaluations (@evaluationsService.GetInProgressEvaluations(1).Count)</a></li>
+                        <li><a asp-area="" asp-controller="Evaluations" asp-action="Completed">Completed evaluations (@evaluationsService.GetCompletedEvaluations(1).Count)</a></li>
+                    </ul>
+                </div>
             </div>
+        </nav>*@
+
+    <nav class="navbar navbar-dark bg-dark fixed-top navbar-expand-md">
+        <div class="container">
+            <button type="button" class="navbar-toggler" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+            </button> <a asp-area=""
+                         asp-controller="Home" asp-action="Index" class="navbar-brand">EvaluationApp</a>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Forms" asp-action="Index">Evaluation Forms (@formService.GetForms(0).Count)</a></li>
-                    <li><a asp-area="" asp-controller="Employees" asp-action="Index">Employees (@formService.GetEmployees().Count) </a></li>
-                    <li><a asp-area="" asp-controller="Forms" asp-action="Index">In progress evaluations</a></li>
-                    <li><a asp-area="" asp-controller="Forms" asp-action="Index">Completed evaluations</a></li>
+                    <li class="nav-item">
+                        <a asp-area="" asp-controller="EvaluationForms" asp-action="Index" class="nav-link">Evaluation Forms (@evaluationFormService.GetAllSharedFormsForEmployee(1).Count)</a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-area="" asp-controller="Employees" asp-action="Index" class="nav-link">Employees (@employeesService.GetEmployeesToEvaluate(1).Count) </a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-area="" asp-controller="Evaluations" asp-action="InProgress" class="nav-link">In progress evaluations (@evaluationsService.GetInProgressEvaluationsForEvaluator(1).Count())</a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-area="" asp-controller="Evaluations" asp-action="Completed" class="nav-link">Completed evaluations (@evaluationsService.GetCompletedEvaluationsForEvaluator(1).Count())</a>
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; 2018 - EvaluationApp</p>
-        </footer>
-    </div>
+
+
 
     <environment include="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
         <script src="~/js/site.js" asp-append-version="true"></script>
+        <script src="~/lib/chosen_v1.8.5/chosen.jquery.js"></script>
+        <script src="~/lib/chosen_v1.8.5/chosen.proto.js"></script>
+        <script src="~/lib/DataTables/datatables.js"></script>
+        <script src="~/lib/DataTables/DataTables-1.10.16/js/dataTables.bootstrap4.js"></script>
+        @*<script src="~/lib/canvasjs-2.1.2/jquery.canvasjs.min.js"></script>*@
+        @*<script src="~/lib/DataTables/Responsive-2.2.1/js/responsive.bootstrap4.js"></script>*@
+        <script src="~/lib/Notification-Plugin-Bootstrap-4-Hullabaloo/js/hullabaloo.js"></script>
+        <script src="https://rawgit.com/silviomoreto/bootstrap-select/master/js/bootstrap-select.js"></script>
+        <script src="~/lib/dist/chartist.js"></script>
     </environment>
     <environment exclude="Development">
         <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
@@ -68,6 +109,14 @@
         </script>
         <script src="~/js/site.min.js" asp-append-version="true"></script>
     </environment>
+
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; 2018 - EvaluationApp</p>
+        </footer>
+    </div>
 
     @RenderSection("Scripts", required: false)
 </body>

@@ -1,0 +1,80 @@
+﻿@model EvaluationApp.Domain.FormMockup.Form
+
+<br /> <br />
+
+<h2>@Model.Name</h2>
+<br>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <!-- Nav tabs -->
+            <div class="card">
+                <ul class="nav nav-tabs" role="tablist">
+                    @{
+                        var idx = 0;
+                        var defaultTab = 0;
+                    }
+                    @foreach (var crtSection in Model.Sections)
+                    {
+                        var tabId = "tab" + idx;
+                        var tabRef = "#" + tabId;
+                        var aClass = "nav-link";
+                        var selectedArea = "";
+                        if (idx == defaultTab)
+                        {
+                            aClass += " active show";
+                            selectedArea = "aria-selected=\"true\"";
+                        }
+                        <li class="nav-item">
+                            <a href="@tabRef" aria-controls="@tabId" role="tab" data-toggle="tab" class="@aClass" @selectedArea>
+                                @crtSection.Name
+                            </a>
+                        </li>
+                        idx++;
+                    }
+                </ul>
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    @{
+                        idx = 0;
+                    }
+                    @foreach (var crtSection in Model.Sections)
+                    {
+                        var tabClass = "tab-pane";
+                        if (idx == defaultTab)
+                        {
+                            tabClass += " active show";
+                        }
+                        string anchorTarget = "tab" + idx;
+                        <div role="tabpanel" class="@tabClass" id="@anchorTarget">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Criteria</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var currentCriteria in crtSection.Criteria)
+                                    {
+                                        var selectId = "criteriaGrade_" + currentCriteria.Id;
+                                        <tr>
+                                            <td>@currentCriteria.Name</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        idx++;
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+<link href="@Url.Content("~/css/DetailsCompleted.css")" rel="stylesheet" type="text/css" />
+
+<div>
+    <a asp-action="Index">Back to Evaluation Forms</a>
+</div>

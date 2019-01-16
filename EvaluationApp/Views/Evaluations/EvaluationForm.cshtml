@@ -1,0 +1,106 @@
+﻿@using AppServices.EvaluationsForms
+@inject IEvaluationFormsService formService
+@model EvaluationApp.Models.EvaluationFormViewModel
+<br /> <br />
+
+<h2>@Model.EvaluationName  with form @Model.FormName for @Model.EmployeeName</h2>
+
+<link href="@Url.Content("~/css/DetailsCompleted.css")" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="~/js/evaluation.js"></script>
+
+<div class="container">
+    <form asp-route="SaveEvaluation" method="post" onsubmit="return false;">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input asp-for="Id" type="hidden" />
+        <div class="row">
+            <div class="col-sm-12">
+                <!-- Nav tabs -->
+                <div class="card">
+                    <ul class="nav nav-tabs" role="tablist">
+                        @{
+                            var idx = 0;
+                            var defaultTab = 0;
+                        }
+                        @foreach (var crtSection in Model.Sections)
+                        {
+                            var tabId = "tab" + idx;
+                            var tabRef = "#" + tabId;
+                            var aClass = "nav-link";
+                            var selectedArea = "";
+                            if (idx == defaultTab)
+                            {
+                                aClass += " active show";
+                                selectedArea = "aria-selected=\"true\"";
+                            }
+                            <li class="nav-item">
+                                <a href="@tabRef" aria-controls="@tabId" role="tab" data-toggle="tab" class="@aClass" @selectedArea>
+                                    @crtSection.Name
+                                </a>
+                            </li>
+                            idx++;
+                        }
+
+                    </ul>
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        @{
+                            idx = 0;
+                        }
+                        @foreach (var crtSection in Model.Sections)
+                        {
+                            var tabClass = "tab-pane";
+                            if (idx == defaultTab)
+                            {
+                                tabClass += " active show";
+                            }
+                            string anchorTarget = "tab" + idx;
+                            <div role="tabpanel" class="@tabClass" id="@anchorTarget">
+
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Criteria</th>
+                                            <th>Evaluation</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        @foreach (var currentCriteria in crtSection.Criteria)
+                                        {
+                                            var selectId = "criteriaGrade_" + currentCriteria.Id;
+                                            <tr>
+                                                <td>@currentCriteria.Name</td>
+                                                <td>
+                                                    <div class="form-group">
+                                                        <select id="@selectId" data-section="@crtSection.Id" data-criteria="@currentCriteria.Id" data-placeholder="Evaluation Grades"
+                                                                class="chosen-select form-control grade-val" tabindex="-1" disabled="@(Model.IsCompleted)"
+                                                                asp-for="@currentCriteria.Grade.Id" asp-items="Model.SectionScales[crtSection.Id].ScaleOptions"></select>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            idx++;
+                        }
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+        <br>
+        <div class="form-group float-right">
+            <button type="button" class="btn btn-secondary" onclick="location.href='@Url.Action("Index", "EvaluationForms")'">Home</button>
+            @if (!Model.IsCompleted)
+            {
+                <button type="button" class="btn btn-success" onclick='finalizeEvaluation(@Model.Id, "@Url.RouteUrl("UpdateEvaluation")", location.href);'>Finalize</button>
+                <input type="submit" value="Save" onclick='saveEvaluation(true ? ("@Model.IsCompleted" === "True") : false, @Model.Id, "@Url.RouteUrl("UpdateEvaluation")");' class="btn btn-info" />
+            }
+        </div>
+        <br><br>
+    </form>
+</div>
+

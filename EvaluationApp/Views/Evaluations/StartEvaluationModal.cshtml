@@ -1,0 +1,51 @@
+﻿@model EvaluationApp.Models.StartEvaluationViewModel
+@{
+    Layout = null;
+}
+
+<div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">Start Evaluation</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <form asp-controller="Evaluations" asp-action="StartFormEvaluationModal" method="post">
+        <div class="form-group">
+            <label>Evaluation Name</label>
+            <input type="text" asp-for="Name" class="form-control" id="name">
+            <span style="display:none" id="show_error" class="text-danger">Please enter the evaluation name</span>
+        </div>
+        <div class="form-group">
+            <label for="name">Evaluation Form</label>
+            <select id="evaluationFormsSelect" data-placeholder="Evaluation Forms"
+                    class="chosen-select form-control" tabindex="-1"
+                    asp-for="SelectedForm" asp-items="Model.FormsList"
+                    disabled="@(Model.IsFormEnabled==false)"></select>
+            <input type="hidden" asp-for="@Model.SelectedForm" />
+        </div>
+        <div class="form-group">
+            <label for="name">Employee</label>
+            <select id="employeeSelect" data-placeholder="Employees"
+                    disabled="@(Model.IsEmployeeEnabled==false)" asp-for="SelectedEmployee" asp-items="Model.EmployeesList"
+                    class="chosen-select form-control" tabindex="-1"></select>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <input type="submit" value="Start Evaluation" class="btn btn-primary action_compute" />
+        </div>
+    </form>
+</div>
+
+<script>
+    $("#evaluationFormsSelect").chosen();
+    $('#employeeSelect').chosen();
+
+    $('.action_compute').click(function () {
+        if ($('#name').val() == "") {
+            $('#show_error').show();
+            return false;
+        }
+    });
+
+</script>

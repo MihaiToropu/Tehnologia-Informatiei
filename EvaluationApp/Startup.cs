@@ -2,8 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EvaluationApp.Core;
-using EvaluationApp.Core.Shared;
+using AppServices.EmployeeAuthentication;
+using AppServices.Evaluations;
+using AppServices.EvaluationsForms;
+using AppServices.EvaluationStatistics;
+using DomainModel.Repository.Shared;
+using Infrastructure.EmployeeAuthenticationService;
+using Infrastructure.EvaluationFormsService;
+using Infrastructure.EvaluationsService;
+using Infrastructure.Persistence.EF;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -23,8 +30,19 @@ namespace EvaluationApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IPersistenceContext, PersistenceContext>();
+            var dataService = services.BuildServiceProvider().GetService<IPersistenceContext>();
+            if (dataService != null)
+            {
+                dataService.InitializeContext(services, Configuration);
+            }
+
             // Add application services.
-            services.AddScoped<IEvaluationFormService, EvaluationFormService>();
+            services.AddScoped<IEvaluationFormsService, EvaluationFormsService>();
+            services.AddScoped<IEvaluationsService, EvaluationsService>();
+            services.AddScoped<IEmployeesService, EmployeesService>();
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<IEvaluationStatisticsService, EvaluationStatisticsService>();
 
             services.AddMvc();
         }
